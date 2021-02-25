@@ -5,6 +5,7 @@ using PyPlot
 using Printf
 using Flux, DiffEqFlux, Optim, DiffEqSensitivity
 using DifferentialEquations
+using DelimitedFiles
 using BSON: @save, @load
 
 #########################
@@ -25,19 +26,19 @@ path_to_ctot_data = @sprintf("%s/c_tot.txt", save_folder)
 D = 0.0005; # Effective diffusion coefficient [m^2/day]
 por = 0.29; # Porosity [-]
 rho_s = 2880; # Dry bulk density [kg/m^3]
-Kf = 1.016/rho; # Freundlich K
+Kf = 1.016/rho_s; # Freundlich K
 nf = 0.874; # Freundlich exponent
 smax = 1/1700; # Sorption capacity [m^3/kg]
 Kl = 1; # Half-concentration [kg/m^3]
 Kd = 0.429/1000; # Partitioning coefficient [m^3/kg]
 
 # Freundlich retardation factor (change accordingly)
-retardation(u) = 1 .+ (1 .- por) ./ por .* rho .* Kf .* nf .* (u .+ 1e-6) .^ (nf-1) # freundlich
+retardation(u) = 1 .+ (1 .- por) ./ por .* rho_s .* Kf .* nf .* (u .+ 1e-6) .^ (nf-1) # freundlich
 
 # For plotting
-lin_sorp(u) = 1 .+ (1 .- por) ./ por .* rho .* Kd # linear
-freundlich(u) = 1 .+ (1 .- por) ./ por .* rho .* Kf .* nf .* (u .+ 1e-6) .^ (nf-1) # freundlich
-langmuir(u) = 1 .+ (1 .- por) ./ por .* rho .* smax .* Kl ./ (u .+ Kl).^2 # langmuir
+lin_sorp(u) = 1 .+ (1 .- por) ./ por .* rho_s .* Kd # linear
+freundlich(u) = 1 .+ (1 .- por) ./ por .* rho_s .* Kf .* nf .* (u .+ 1e-6) .^ (nf-1) # freundlich
+langmuir(u) = 1 .+ (1 .- por) ./ por .* rho_s .* smax .* Kl ./ (u .+ Kl).^2 # langmuir
 
 # Simulation domain
 X = 1.0; T = 2500;
