@@ -440,7 +440,7 @@ function state_kernel(u,pstar_2,flux)
     rx_nn = re1(pstar_2[1:length(p1)])
 
     dc = [rx_nn([u[i]])[1] for i in 1:Nx] ./ 10 .^ pstar_2[end] .* flux
-    dc_tot = pstar_2[end-3] * flux
+    dc_tot = pstar_2[end-3] * por / (rho_s/1000) * flux
     vcat(dc,dc_tot)
 end
 
