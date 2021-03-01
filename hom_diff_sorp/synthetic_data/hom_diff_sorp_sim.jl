@@ -230,7 +230,6 @@ cb = function (p_1,l,pred,ret)
     global save_iter
 
     if iter%save_freq == 0
-        println("saved figure")
         savefig(@sprintf("%s/diss_pred_%05d.png", save_folder, save_iter), dpi=200, bbox_inches="tight")
         save_iter += 1
     end
@@ -243,7 +242,7 @@ end
 
 # Train first with ADAM and continue with BFGS
 res_diss1 = DiffEqFlux.sciml_train(loss_rd, p_1, ADAM(0.001), cb=cb, maxiters = 400)
-res_diss2 = DiffEqFlux.sciml_train(loss_rd, res_diss1.minimizer, BFGS(), cb=cb, maxiters = 1000)
+res_diss2 = DiffEqFlux.sciml_train(loss_rd, res_diss1.minimizer, BFGS(), cb=cb, maxiters = 100)
 
 # Update and save plot
 global save_iter
@@ -403,7 +402,7 @@ cb = function (p_2,l,pred)
 end
 
 # Train with BFGS
-res_tot = DiffEqFlux.sciml_train(loss_rd, p_2, BFGS(), cb=cb, maxiters = 1000)
+res_tot = DiffEqFlux.sciml_train(loss_rd, p_2, BFGS(), cb=cb, maxiters = 100)
 pstar_2 = [pstar_1[1:length(p1)]; res_tot.minimizer; pstar_1[end-2:end]]
 
 # Update and save plot
@@ -463,28 +462,28 @@ fig = figure(figsize=(6,6))
 subplot(321)
 pcolormesh(x,t,ode_data[1:Nx,:]', rasterized=true)
 xlabel(L"$x$"); ylabel(L"$t$"); title("Dissolved Concentration Data")
-yticks([0, 2000, 4000, 6000, 8000, 10000])
+yticks([0, 500, 1000, 1500, 2000, 2500])
 colorbar(); clim([0, maximum(ode_data[1:Nx,:])]);
 
 # Dissolved concentration prediction
 ax = subplot(322)
 pcolormesh(x,t,pred[1:Nx,:]', rasterized=true)
 xlabel(L"$x$"); ylabel(L"$t$"); title("Dissolved Concentration Prediction")
-yticks([0, 2000, 4000, 6000, 8000, 10000])
+yticks([0, 500, 1000, 1500, 2000, 2500])
 colorbar(); clim([0, maximum(ode_data[1:Nx,:])]);
 
 # Total concentration data
 subplot(323)
 pcolormesh(x,t,ode_data[Nx+1:2*Nx,:]', rasterized=true)
 xlabel(L"$x$"); ylabel(L"$t$"); title("Total Concentration Data")
-yticks([0, 2000, 4000, 6000, 8000, 10000])
+yticks([0, 500, 1000, 1500, 2000, 2500])
 colorbar(); clim([0, maximum(ode_data[Nx+1:2*Nx,:])]);
 
 # Total concentration prediction
 ax = subplot(324)
 pcolormesh(x,t,pred[Nx+1:2*Nx,:]', rasterized=true)
 xlabel(L"$x$"); ylabel(L"$t$"); title("Total Concentration Prediction")
-yticks([0, 2000, 4000, 6000, 8000, 10000])
+yticks([0, 500, 1000, 1500, 2000, 2500])
 colorbar(); clim([0, maximum(ode_data[Nx+1:2*Nx,:])]);
 
 # Retardation factor
