@@ -1,0 +1,57 @@
+"""
+This file contains the configuration for the kernel network
+"""
+
+#
+# General configurations
+
+ARCHITECTURE_NAME = "convlstm"
+MODEL_NAME = "tmp"  # Specified externally by experiment.py and evaluation.py
+DEVICE = "CPU"  # or "CPU"
+DATA_NOISE = 0.0  # Specified externally by experiment.py and evaluation.py
+
+#
+# Training parameters
+
+SAVE_MODEL = True
+CONTINUE_TRAINING = False
+
+EPOCHS = 100
+TRAINING_ITERS = 100  # Iterations per epoch
+SEQ_LEN = 500  # Specified externally by experiment.py and evaluation.py
+BATCH_SIZE = 1
+LEARNING_RATE = 0.001
+
+#
+# Testing parameters
+
+TEACHER_FORCING_STEPS = 10
+CLOSED_LOOP_STEPS = 1990
+
+#
+# ConvLSTM configurations
+
+INPUT_SIZE = 2
+FIELD_SIZE = 26
+
+# Convolution lstm layer (26 -> 26)
+CONVLSTM1_INPUT_SIZE = 26
+CONVLSTM1_INPUT_CHANNELS = 2
+CONVLSTM1_HIDDEN_CHANNELS = 9
+CONVLSTM1_KERNEL_SIZE = 3
+CONVLSTM1_USE_BIAS = True
+
+# Convolution lstm layer (26 -> 26)
+CONVLSTM2_INPUT_SIZE = 26
+CONVLSTM2_INPUT_CHANNELS = 9
+CONVLSTM2_HIDDEN_CHANNELS = 2
+CONVLSTM2_KERNEL_SIZE = 3
+CONVLSTM2_USE_BIAS = True
+
+#
+# Performance
+
+CURRENT_EPOCH = 98
+EPOCHS = 100
+CURRENT_TRAINING_ERROR = 4.945376508658228e-06
+LOWEST_TRAINING_ERROR = 4.945376508658228e-06
