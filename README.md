@@ -1,5 +1,5 @@
 # Finite Volume Neural Network
-This is the code and data repository for the Finite Volume Neural PDE method.
+This is the code and data repository for the Finite Volume Neural Network method.
 
 ## Organization
 This repository contains the implementation of the FINN method for the non-linear diffusion-sorption process.
