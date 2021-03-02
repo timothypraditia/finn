@@ -1,8 +1,8 @@
-# Finite Volume Neural Partial Differential Equation
+# Finite Volume Neural Network
 This is the code and data repository for the Finite Volume Neural PDE method.
 
 ## Organization
-This repository contains the implementation of the FVNPDE method for the non-linear diffusion-sorption process.
+This repository contains the implementation of the FINN method for the non-linear diffusion-sorption process.
 The implementation is divided in two parts: synthetic and experimental data.
 
 ## Synthetic Dataset
