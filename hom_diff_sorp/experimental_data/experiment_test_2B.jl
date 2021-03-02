@@ -6,6 +6,7 @@ using PyPlot
 using Printf
 using Flux, DiffEqFlux, Optim, DiffEqSensitivity
 using DifferentialEquations
+using Interpolations
 using BSON: @save, @load
 
 #########################
@@ -165,3 +166,17 @@ legend()
 gcf()
 
 savefig(@sprintf("%s/core_2B.png", save_folder))
+
+# Interpolate the data points to calculate MSE (the depth slices from the experimental data is slightly different)
+x_data_interp = x_data[2:end-1]
+interp_model = interpolate((x,),profile_model,Gridded(Linear()))
+profile_model = interp_model(x_data_interp)
+profile_data = profile_data[2:end-1]
+
+# Calculate the normalized MSE of the NN prediction and calibrated physical model
+norm_data = (profile_data .- minimum(profile_data))/(maximum(profile_data) .- minimum(profile_data))
+norm_model = (profile_model .- minimum(profile_data))/(maximum(profile_data) .- minimum(profile_data))
+norm_fitmodel = (profile_fitmodel .- minimum(profile_data))/(maximum(profile_data) .- minimum(profile_data))
+
+mse_model = sum(abs2, norm_model .- norm_data)/size(profile_data)[1]
+mse_fitmodel = sum(abs2, norm_fitmodel .- norm_data)/size(profile_data)[1]
