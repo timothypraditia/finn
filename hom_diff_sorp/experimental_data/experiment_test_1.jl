@@ -31,6 +31,13 @@ all_data = xf1[:]
 t = convert(Array{Float64,1},all_data[:,1]) #days
 breakthrough_data = convert(Array{Float64,1},all_data[:,2])/1000 #kg/m^3
 
+# Profile from physical model and depth
+xf3 = XLSX.readxlsx(path_to_data)[3]
+all_model = xf3[:]
+
+t_fitmodel = convert(Array{Float64,1},all_model[:,1]) #days
+breakthrough_fitmodel = convert(Array{Float64,1},all_model[:,2])/1000 #kg/m^3
+
 # Soil parameters
 xf2 = XLSX.readxlsx(path_to_data)[2]
 params = xf2[:]
@@ -154,7 +161,8 @@ breakthrough_pred = (pred[Nx-1,:] .- pred[Nx,:]) .* D .* por .* cross_area ./ dx
 # Plot the prediction
 figure()
 scatter(t,1000*breakthrough_data,label="Experimental Data",color="red")
-breakthrough_plot = plot(t, 1000*breakthrough_pred,label="Prediction")
+plot(t, 1000*breakthrough_pred,label="NN Prediction")
+plot(t_fitmodel,1000*breakthrough_fitmodel,linestyle="--",label="Physical Model")
 title("Breakthrough Curve")
 xlabel(L"time [$days$]")
 ylabel(L"Tailwater concentration [$mg/L$]")
@@ -162,3 +170,11 @@ legend()
 gcf()
 
 savefig(@sprintf("%s/core_1.png", save_folder))
+
+# Calculate the normalized MSE for the NN prediction and calibrated physical model
+norm_data = (breakthrough_data .- minimum(breakthrough_data))/(maximum(breakthrough_data) .- minimum(breakthrough_data))
+norm_model = (breakthrough_pred .- minimum(breakthrough_data))/(maximum(breakthrough_data) .- minimum(breakthrough_data))
+norm_fitmodel = (breakthrough_fitmodel .- minimum(breakthrough_data))/(maximum(breakthrough_data) .- minimum(breakthrough_data))
+
+mse_model = sum(abs2, norm_model .- norm_data)/size(breakthrough_data)[1]
+mse_fitmodel = sum(abs2, norm_fitmodel .- norm_data)/size(breakthrough_data)[1]
