@@ -24,12 +24,19 @@ save_folder = "core_2"
 # Read data from file #
 #######################
 
-# Breakthrough data and time steps
+# Profile data and depth
 xf1 = XLSX.readxlsx(path_to_data)[1]
 all_data = xf1[:]
 
 x_data = convert(Array{Float64,1},all_data[:,1]) #days
 profile_data = convert(Array{Float64,1},all_data[:,2])/1000 #kg/m^3
+
+# Profile from physical model and depth
+xf3 = XLSX.readxlsx(path_to_data)[3]
+all_model = xf3[:]
+
+x_fitmodel = convert(Array{Float64,1},all_model[:,1]) #days
+profile_fitmodel = convert(Array{Float64,1},all_model[:,2])/1000 #kg/m^3
 
 # Soil parameters
 xf2 = XLSX.readxlsx(path_to_data)[2]
@@ -149,7 +156,8 @@ profile_model = u .* (1.0 .+ [rx_nn([elem]) for elem in u] .* 10 .^ pstar[end]) 
 # Plot the prediction
 figure()
 scatter(x_data,1000*profile_data,color="red",label="Experimental Data")
-plot(x,1000*profile_model,label="Prediction")
+plot(x,1000*profile_model,label="NN Prediction")
+plot(x_fitmodel,1000*profile_fitmodel,linestyle="--",label="Physical Model")
 title("Soil Data of Core #2B")
 xlabel(L"Depth [$m$]")
 ylabel(L"TCE Concentration [$mg/L$]")
