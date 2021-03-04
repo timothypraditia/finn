@@ -3,7 +3,6 @@ This script take a particular bunch of .csv files containing the data of a
 spedivied model (tcn, convlstm, distana, finn) and creates an animation
 """
 
-
 import numpy as np
 from utils import utils
 import csv
@@ -16,11 +15,11 @@ import glob
 #####################
 
 # Model that is evaluated
-MODEL_TYPE = "finn"  # Can bei "tcn", "convlstm", "distana" or "finn"
+MODEL_TYPE = "tcn"  # Can bei "tcn", "convlstm", "distana" or "finn"
 
 # Testing parameters
 NUMBER_OF_MODELS = 10
-DATA_NOISE = 0.0
+DATA_NOISE = 1e-5
 DATA_FILE = "seen"  # can be either "seen" or "unseen"
 FEED_BOUNDARY_DATA = False
 TEACHER_FORCING_STEPS = 1

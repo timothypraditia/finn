@@ -21,6 +21,7 @@ import sys
 # ---- with boundary feed ----
 # noise     seen                            unseen
 # 0.0       0.09847083+-0.2801934			0.09194392+-0.20221253
+# 1e-5      0.005890298+-0.0041398425       0.030304825+-0.011882976
 
 # CONVLSTM
 # ---- no boundary feed ----
@@ -30,6 +31,7 @@ import sys
 # ---- with boundary feed ----
 # noise     seen                            unseen
 # 0.0       0.06406576+-0.09415116			0.077789016+-0.09328022
+# 1e-5      0.048843954+-0.05720509         0.06589377+-0.07942901
 
 # DISTANA
 # ---- no boundary feed ----
@@ -39,6 +41,7 @@ import sys
 # ---- with boundary feed ----
 # noise     seen                            unseen
 # 0.0       0.09141965+-0.26532543			0.072504+-0.19800977
+# 1e-5      0.009989682+-0.029078376        0.01635728+-0.04007094
 
 
 #####################
@@ -46,17 +49,17 @@ import sys
 #####################
 
 # Model that is evaluated
-MODEL_TYPE = "distana"  # Can bei "convlstm", "distana" or "tcn"
+MODEL_TYPE = "distana"  # Can be "convlstm", "distana" or "tcn"
 
 # Testing parameters
 NUMBER_OF_MODELS = 10
 POOLSIZE = 1
 SEQUENCE_LENGTH = 2000
-DATA_NOISE = 0.0
-DATA_FILE = "unseen"  # can be either "seen" or "unseen"
+DATA_NOISE = 1e-5
+DATA_FILE = "seen"  # can be either "seen" or "unseen"
 FEED_BOUNDARY_DATA = True
 VISUALIZE_RESULTS = True
-WRITE_DATA_TO_CSV = True
+WRITE_DATA_TO_CSV = False
 
 # Add the path of the chosen model to the system path to import the appropriate
 # test and configuration files
