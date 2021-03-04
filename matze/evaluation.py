@@ -14,19 +14,31 @@ import sys
 
 
 # TCN
+# ---- no boundary feed ---
 # noise     seen                            unseen
 # 0.0       0.12159859+-0.34860754          0.12404573+-0.24041595
 # 1e-5      0.0061222245+-0.0041741757      0.047852196+-0.008689816
+# ---- with boundary feed ----
+# noise     seen                            unseen
+# 0.0       0.09847083+-0.2801934			0.09194392+-0.20221253
 
 # CONVLSTM
+# ---- no boundary feed ----
 # noise     seen                            unseen
 # 0.0       0.100454226+-0.11223795         0.13087702+-0.11448048
 # 1e-5      0.055559326+-0.06549839         0.08911292+-0.07485268
+# ---- with boundary feed ----
+# noise     seen                            unseen
+# 0.0       0.06406576+-0.09415116			0.077789016+-0.09328022
 
 # DISTANA
+# ---- no boundary feed ----
 # noise     seen                            unseen
 # 0.0       0.10598032+-0.31299484          0.10097959+-0.21704365
 # 1e-5      0.05825447+-0.16827264          0.069869+-0.1109172
+# ---- with boundary feed ----
+# noise     seen                            unseen
+# 0.0       0.09141965+-0.26532543			0.072504+-0.19800977
 
 
 #####################
@@ -34,14 +46,15 @@ import sys
 #####################
 
 # Model that is evaluated
-MODEL_TYPE = "convlstm"  # Can bei "convlstm", "distana" or "tcn"
+MODEL_TYPE = "distana"  # Can bei "convlstm", "distana" or "tcn"
 
 # Testing parameters
-DATA_NOISE = 0.0
 NUMBER_OF_MODELS = 10
 POOLSIZE = 1
 SEQUENCE_LENGTH = 2000
+DATA_NOISE = 0.0
 DATA_FILE = "unseen"  # can be either "seen" or "unseen"
+FEED_BOUNDARY_DATA = True
 VISUALIZE_RESULTS = True
 WRITE_DATA_TO_CSV = True
 
@@ -72,6 +85,10 @@ def write_to_csv(data_name, data):
     # Specify the pathname
     filepath = src_path + "/" + data_name + "_" + cfg.ARCHITECTURE_NAME
 
+    if FEED_BOUNDARY_DATA:
+    	# Add "boundary_feed" to filename
+    	filepath = filepath + "_bound-feed"
+
     if "preds" in data_name:
         # Predictions of the n models
         for idx, sample in enumerate(data):
@@ -90,7 +107,8 @@ def train_model(model_number):
 		sequence_length=SEQUENCE_LENGTH,
         data_noise=DATA_NOISE,
         data_file=DATA_FILE,
-        visualize_results=VISUALIZE_RESULTS
+        visualize_results=VISUALIZE_RESULTS,
+        feed_boundary_data=FEED_BOUNDARY_DATA
 	)
 	return data
 

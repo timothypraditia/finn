@@ -16,7 +16,7 @@ if cfg.DEVICE == "CPU":
     os.environ["CUDA_VISIBLE_DEVICES"] = ""
 
 def run_testing(model_name, sequence_length, data_noise, data_file,
-                visualize_results):
+                visualize_results, feed_boundary_data):
     
     # Set a globally reachable boolean in the config file for training
     cfg.TRAINING = False
@@ -98,6 +98,11 @@ def run_testing(model_name, sequence_length, data_noise, data_file,
             #
             # Teacher forcing - Set the dynamic input for this iteration
             net_in_step = net_input[t]
+
+        # Feed the boundary data also in closed loop if desired
+        if feed_boundary_data:
+            net_in_step[:, :, 0] = net_input[t, :, :, 0]
+            net_in_step[:, :, -1] = net_input[t, :, :, -1]
 
         # Forward the input through the network
         model.forward(dyn_in=net_in_step)

@@ -19,7 +19,7 @@ if cfg.DEVICE == "CPU":
 
 
 def run_testing(model_name, sequence_length, data_noise, data_file,
-                visualize_results):
+                visualize_results, feed_boundary_data):
     
     # Set a globally reachable boolean in the config file for training
     cfg.TRAINING = False
@@ -104,6 +104,11 @@ def run_testing(model_name, sequence_length, data_noise, data_file,
         # Prepare the network input for this sequence step
         # Closed loop - receiving the output of the last time step as input
         net_input_steps = net_outputs[:, :, t_start:t].detach().numpy()
+
+        # Feed the boundary data also in closed loop if desired
+        if feed_boundary_data:
+            net_input_steps[:, :, :, 0] = net_input[:, :, t_start:t, 0]
+            net_input_steps[:, :, :, -1] = net_input[:, :, t_start:t, -1]
 
         net.forward(net_in=net_input_steps)
         net_outputs[:, :, t] = tensors.output[:, :, -1]

@@ -57,7 +57,7 @@ def save_model_to_file(path, cfg_file, current_epoch, epochs, epoch_errors,
 
 def animate_diffusion(outputs_dis, outputs_tot, targets_dis, targets_tot,
                       teacher_forcing_steps):
-
+    
     # First set up the figure, the axis, and the plot element we want to
     # animate
     fig, axes = plt.subplots(2, 1, figsize=[12, 6], dpi=100)
