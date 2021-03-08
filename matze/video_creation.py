@@ -7,6 +7,9 @@ import numpy as np
 from utils import utils
 import csv
 import glob
+import os
+import shutil
+import matplotlib.pyplot as plt
 
 
 
@@ -14,13 +17,17 @@ import glob
 # GLOBAL PARAMETERS #
 #####################
 
+# Animate frames with matplotlib or write .png pictures to file and create .mp4
+# with ffmpeg
+VIDEO_TYPE = "ffmpeg"  # "matplotlib" or "ffmpeg"
+
 # Model that is evaluated
-MODEL_TYPE = "tcn"  # Can bei "tcn", "convlstm", "distana" or "finn"
+MODEL_TYPE = "finn"  # Can bei "tcn", "convlstm", "distana" or "finn"
 
 # Testing parameters
 NUMBER_OF_MODELS = 10
 DATA_NOISE = 1e-5
-DATA_FILE = "seen"  # can be either "seen" or "unseen"
+DATA_FILE = "unseen"  # can be either "seen" or "unseen"
 FEED_BOUNDARY_DATA = False
 TEACHER_FORCING_STEPS = 1
 SEQUENCE_LENGTH = 700
@@ -93,9 +100,49 @@ def main():
     targets_dis = read_csv_files(dis_label_paths)
     targets_tot = read_csv_files(tot_label_paths)
 
-    # Animate the data
-    utils.animate_diffusion(outputs_dis, outputs_tot, targets_dis,
-                            targets_tot, TEACHER_FORCING_STEPS)
+    #
+    # Create a video
+
+    if VIDEO_TYPE == "matplotlib":
+        # Animate the data
+        utils.animate_diffusion(outputs_dis, outputs_tot, targets_dis,
+                                targets_tot, TEACHER_FORCING_STEPS)
+    elif VIDEO_TYPE == "ffmpeg":
+
+        # Create temporary directory to store the pictures
+        os.makedirs("tmp", exist_ok=True)
+
+        # Iteratively write .png pictures to file
+        for t in range(SEQUENCE_LENGTH):
+            print("Creating picture " + str(t) + "/" + str(SEQUENCE_LENGTH))
+
+            fig, outputs_dis_lines, outputs_tot_lines, targets_dis_line, \
+              targets_tot_line, txt = utils.plot_diffusion(
+                outputs_dis=outputs_dis,
+                outputs_tot=outputs_tot,
+                targets_dis=targets_dis,
+                targets_tot=targets_tot,
+                timestep=t,
+                teacher_forcing_steps=TEACHER_FORCING_STEPS
+            )
+            plt.tight_layout()
+            plt.savefig("tmp/" + str(t) + str(".png"), bbox_inches="tight",
+                        pad_inches=0.1)
+            plt.close()
+
+        # Call ffmpeg to create a video from the separate pictures
+        vid_name = MODEL_TYPE + "_" + DATA_FILE
+        if FEED_BOUNDARY_DATA:
+            vid_name = vid_name + "_bound-feed"
+
+        os.system(
+            "ffmpeg -r 35 -i tmp/%d.png " \
+            "-vf pad=width=1210:height=610:x=10:y=7:color=black " \
+            "-c:v libx264 -pix_fmt yuv420p " + vid_name + ".mp4"
+        )
+
+        # Remove the temporary directory (and its content)
+        shutil.rmtree("tmp")
 
 
 ##########

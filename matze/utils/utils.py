@@ -55,12 +55,12 @@ def save_model_to_file(path, cfg_file, current_epoch, epochs, epoch_errors,
         text_file.write(output_string)
 
 
-def animate_diffusion(outputs_dis, outputs_tot, targets_dis, targets_tot,
-                      teacher_forcing_steps):
+def plot_diffusion(outputs_dis, outputs_tot, targets_dis, targets_tot,
+                   timestep, teacher_forcing_steps):
     
     # First set up the figure, the axis, and the plot element we want to
     # animate
-    fig, axes = plt.subplots(2, 1, figsize=[12, 6], dpi=100)
+    fig, axes = plt.subplots(2, 1, figsize=[12, 6], dpi=100, sharex=True)
     axes[0].set_ylim(min(np.min(outputs_dis), np.min(targets_dis)),
                      max(np.max(outputs_dis), np.max(targets_dis)))
     axes[0].set_ylabel("Dissolved concentration")
@@ -68,10 +68,14 @@ def animate_diffusion(outputs_dis, outputs_tot, targets_dis, targets_tot,
                      max(np.max(outputs_tot), np.max(targets_tot)))
     axes[1].set_ylabel("Total")
 
-    txt = axes[0].text(0, axes[0].get_yticks()[-1], "t = 0", fontsize=20,
+    if timestep < teacher_forcing_steps:
+        time_text = "Teacher forcing, time is " + str(timestep)
+    else:
+        time_text = "Closed loop prediction, time is " + str(timestep)
+    txt = axes[0].text(0, axes[0].get_yticks()[-1], time_text, fontsize=20,
                        color="white")
 
-    # Plot the dissorption
+    # Plot the diffusion
     outputs_dis_lines = []
     for n in range(len(outputs_dis)):
         if n == 0:
@@ -79,32 +83,53 @@ def animate_diffusion(outputs_dis, outputs_tot, targets_dis, targets_tot,
         else:
             label=None
         diss_line, = axes[0].plot(
-            range(len(outputs_dis[0])), outputs_dis[n, :, 0],
+            range(len(outputs_dis[0])), outputs_dis[n, :, timestep],
             label=label, color="deepskyblue"
         )
         outputs_dis_lines.append(diss_line)
 
     targets_dis_line, = axes[0].plot(
-        range(len(targets_dis[0])), targets_dis[0, :, 0], label="Ground truth",
-        color="red", linestyle="--"
+        range(len(targets_dis[0])), targets_dis[0, :, timestep],
+        label="Ground truth", color="red", linestyle="--"
     )
 
-    axes[0].legend()
+    axes[0].legend(loc="upper right")
+    axes[0].set_xlim([0, 25])
 
     # Plot the total amount
     outputs_tot_lines = []
     for n in range(len(outputs_tot)):
         tot_line, = axes[1].plot(
-            range(len(outputs_tot[0])), outputs_tot[n, :, 0],
+            range(len(outputs_tot[0])), outputs_tot[n, :, timestep],
             color="deepskyblue"
         )
         outputs_tot_lines.append(tot_line)
 
     targets_tot_line, = axes[1].plot(
-        range(len(targets_tot[0])), targets_tot[0, :, 0], color="red",
+        range(len(targets_tot[0])), targets_tot[0, :, timestep], color="red",
         linestyle="--"
     )
+    axes[1].set_xlim([0, 25])
 
+    return fig, outputs_dis_lines, outputs_tot_lines, targets_dis_line, \
+           targets_tot_line, txt
+
+
+def animate_diffusion(outputs_dis, outputs_tot, targets_dis, targets_tot,
+                      teacher_forcing_steps):
+    
+    # Plot the dissolved and total amount in the first timestep
+    fig, outputs_dis_lines, outputs_tot_lines, targets_dis_line, \
+        targets_tot_line, txt = plot_diffusion(
+            outputs_dis=outputs_dis,
+            outputs_tot=outputs_tot,
+            targets_dis=targets_dis,
+            targets_tot=targets_tot,
+            timestep=0,
+            teacher_forcing_steps=teacher_forcing_steps
+        )
+
+    # Animate the plot with all remaining timesteps
     anim = animation.FuncAnimation(fig, animate, frames=len(outputs_dis[0, 0]),
                                    fargs=(outputs_dis, outputs_tot,
                                           targets_dis, targets_tot,
@@ -129,9 +154,9 @@ def animate(i, outputs_dis, outputs_tot, targets_dis, targets_tot,
 
     # Display the current timestep in text form in the plot
     if i < teacher_forcing_steps:
-        txt.set_text("Teacher forcing, t = " + str(i))
+        txt.set_text("Teacher forcing, time is " + str(i))
     else:
-        txt.set_text("Closed loop prediction, t = " + str(i))
+        txt.set_text("Closed loop prediction, time is " + str(i))
 
     # Update the dissolve plot
     for line_idx, outputs_dis_line in enumerate(outputs_dis_lines):
