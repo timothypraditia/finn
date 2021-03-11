@@ -8,20 +8,20 @@ import numpy as np
 import sys
 
 
+# TCN
+# 10 models
+# noise0.0  -> 5.631153540434752e-06+-4.638821505382622e-06
+# noise1e-5 -> 7.919000704077916e-06+-5.38355037762558e-06
+
 # CONVLSTM
 # 10 models
 # noise0.0  -> 5.655764040511713e-06+-9.597546675193882e-07
-# noise1e-5 ->
+# noise1e-5 -> 5.52243383037876e-06+-1.6444124806378595e-06
 
 # DISTANA
 # 10 models
 # noise0.0  -> 1.3350772432545455e-06+-8.511844531846674e-07
 # noise1e-5 -> 1.8462115297950275e-06+-1.11033431494542e-06
-
-# TCN
-# 10 models
-# noise0.0  -> 5.631153540434752e-06+-4.638821505382622e-06
-# noise1e-5 ->
 
 
 #####################
@@ -29,7 +29,7 @@ import sys
 #####################
 
 # Model that is trained
-MODEL_TYPE = "tcn"  # Can bei "convlstm", "distana" or "tcn"
+MODEL_TYPE = "convlstm"  # Can be "convlstm", "distana" or "tcn"
 
 # Training parameters
 DATA_NOISE = 1e-5
