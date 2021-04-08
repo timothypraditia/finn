@@ -1,7 +1,6 @@
 __pycache__/
 *.synctex.gz
 *.aux
-*.csv
 *.log
 *.toc
 *.out

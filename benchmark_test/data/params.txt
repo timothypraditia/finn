@@ -1,0 +1,23 @@
+# Soil Parameters
+D = 0.0005; # Effective diffusion coefficient [m^2/day]
+por = 0.29; # Porosity [-]
+rho = 2880; # Dry bulk density [kg/m^3]
+Kf = 1.016/rho; # Freundlich K
+nf = 0.874; # Freundlich exponent
+
+# Freundlich retardation factor
+retardation(u) = 1 .+ (1 .- por) ./ por .* rho .* Kf .* nf .* (u .+ 1e-6) .^ (nf-1) # freundlich
+
+# Simulation domain
+X = 1.0; T = 10000;
+dx = 0.04; dt = T/1000;
+Nx = 26;
+Nt = 1001;
+
+# Initial conditions
+c0 = zeros(Nx)
+c_tot0 = zeros(Nx)
+
+# Boundary conditions
+left_BC = 1.0 # Constant boundary condition at the left [kg/m^3]
+right_BC = (c[Nx-1]-c[Nx])/dx * D # How to calculate the right boundary condition that is flux-dependent
