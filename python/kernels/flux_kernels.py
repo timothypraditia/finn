@@ -151,6 +151,8 @@ class Flux_Kernels(torch.nn.Module):
             flux_mult = self.coeff_nn(u_coupled).squeeze(2) * 10**self.p_exp
         else:
             flux_mult = torch.ones(self.Nx, self.Ny)
+           
+        flux_mult = flux_mult.to(self.device)
         
         # Squeeze the u_main dimension into [Nx, Ny]
         u_main = u_main.squeeze(0)
